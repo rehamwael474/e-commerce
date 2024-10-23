@@ -3,9 +3,7 @@ import { Brand, Product, Subcategory } from "../../../db/index.js"
 import { AppError } from "../../utils/appError.js"
 import{messages} from "../../utils/constant/messages.js"
 import cloudinary from "../../utils/constant/cloud.js"
-import pkg from 'joi';
 import { ApiFeature } from "../../utils/apiFeatures.js"
-const { date } = pkg;
 
 // add product
 export const addProduct = async(req,res,next)=>{
@@ -89,45 +87,102 @@ export const addProduct = async(req,res,next)=>{
 // get products
 // pagination  //sort //search //filter
 export const getAllProducts = async (req,res,next) =>{
-    let { page,size,sort,select,...filter} = req.query
-    //let filter = JSON.parse(JSON.stringify(req.query))
-    //console.log({select})
-    //let excludedFields = ['sort','select','page','size']
-    //excludedFields.forEach(ele =>{
-        //delete filter[ele]
+   // pagination  sort  select  filter
+   // let {page, size, sort, select, ...filter} = req.query
+   // let filter = JSON.parse(JSON.stringify(req.query))
+   // let excludedFields = ['sort', 'select', 'size', 'page']
+   // excludedFields.forEach(ele => {
+    //    delete filter[ele]
     //})
-    console.log(filter)
-    filter = JSON.parse(JSON.stringify(filter).replace(/'gte|gt|lte|lt'/g, match => `$${match}` ))
- console.log(filter)
+   // filter = JSON.parse( JSON.stringify(filter).replace(/'gte | gt | lte | lt'/g, match => `$${match}`) )
     /**
-     * page size data   skip
-     * 1     3   1 2 3   0
-     * 2     3   4 5 6   3
-     * 3     3   7 8 9   6
-     */ 
-    //if(!page||page <= 0){
-      //  page = 1
-    //}     
-    //if(!size|| size <= 0){
-      //  size = 3
-    //}
-    //let skip = (page - 1) * size;
-    //sort = sort?.replaceAll(',','')
-    //select= select?.replaceAll(',','')
-    //console.log({sort})
-    //console.log(req.query)
-  
-
-
-    //const mongooseQuery = Product.find(filter)
-    //mongooseQuery.limit(size).skip(skip)
-    //mongooseQuery.sort(sort)
-    //mongooseQuery.select(select)
-    //const products = await mongooseQuery
-
-    
+     * page   size    data    skip
+     *  1       3     1 2 3     0
+     *  2       3     4 5 6     3
+     *  3       3     7 8 9     6
+     */
+   // if(!page || page <= 0){
+    //    page = 1
+   // }
+   // if(!size || size <= 0){
+    //    size = 3
+   // }
+    //let skip = (page - 1) * size
+    //sort = sort?.replaceAll(',', ' ')
+    //select = select?.replaceAll(',', ' ')
+    //const products = await Prouduct.find(filter).limit(size).skip(skip).sort(sort).select(select)
     const apiFeature = new ApiFeature(Product.find(), req.query).pagination().sort().select().filter()
     const products = await apiFeature.mongooseQuery
     
     return res.status(200).json({success:true , data:products})
+}
+
+// update product
+export const updateProduct = async (req,res,next) => {
+    // get data from req
+    let { name, description, stock, price, discount, discountType, colors, sizes } = req.body
+    const { productId } = req.body
+    name = name.toLowerCase
+    // check existense
+    const productExist = await Prouduct.findById(productId)//{}, null
+    if(!productExist){
+        return next(new AppError(messages.product.notFound, 404))
+    }
+    // check name existence
+    const nameExist = await Prouduct.findOne({ name })//{}, null
+    if(nameExist){
+        return next(new AppError(messages.product.alreadyExist, 409))
+    }
+    // prepare data
+    const slug = slugify(name)
+    productExist.name = name
+    productExist.slug = slug
+    productExist.description = description
+    productExist.stock = stock
+    productExist.price = price
+    productExist.discount = discount
+    productExist.discountType = discountType
+    productExist.colors = colors
+    productExist.sizes = sizes
+    // update image
+     if(req.file){
+        const {secure_url, public_id } = await cloudinary.uploader.upload(req.file.path, {
+            public_id: productExist.mainImage.public_id
+        })
+     }
+     if(req.files){
+        const {secure_url, public_id } = await cloudinary.uploader.upload(req.file.path, {
+            public_id: productExist.subImages.public_id
+        })
+     }
+     // add to db
+     const updatedProduct = await productExist.save()//{}, null
+     if(!updatedProduct){
+        return next(new AppError(messages.product.failToUpdate, 500))
+     }
+     // send response
+     return res.status(200).json({
+        message: messages.product.updatedSuccessfully,
+        success: true,
+        data: updatedProduct
+     })
+
+
+
+}
+
+// get specific product
+export const getSpecificProduct = async (req,res,next) => {
+    // get data from req
+    const { productId } = req.params
+    const getSpecific = await Prouduct.findById(productId)
+    return res.status(200).json({success: true, data: getSpecific})
+}
+
+// delete product
+export const deleteProduct = async (req,res,next) => {
+    // get data from req
+    const { productId } = req.params
+    const deletedProduct = await Prouduct.deleteOne({ _id: productId })
+    return res.status(200).json({message: messages.product.deletedSuccessfully, success: true})
 }

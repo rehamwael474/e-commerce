@@ -1,7 +1,6 @@
 import fs from 'fs'
 import path from 'path'
 import multer, { diskStorage } from "multer"
-import { nanoid } from 'nanoid'
 import { AppError } from './appError.js'
 import { fileValidation } from './multer.js'
 

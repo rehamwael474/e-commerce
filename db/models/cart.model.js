@@ -1,9 +1,5 @@
-// schema
-
-import pkg from 'joi';
-const { ref, required } = pkg;
 import { model, Schema } from "mongoose";
-
+// schema
 const cartSchema = new Schema({
     user:{
         type: Schema.Types.ObjectId,
@@ -12,7 +8,9 @@ const cartSchema = new Schema({
     },
     products: [
         {
-            proudctId: {type:Schema.Types.ObjectId,ref: "Product"},
+            proudctId: {type:Schema.Types.ObjectId,
+            ref: "Product"
+        },
             quantity:Number,
             _id:false
         }

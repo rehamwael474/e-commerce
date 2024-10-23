@@ -1,5 +1,5 @@
 import { model, Schema } from "mongoose";
-import { paymentMethod } from "../../src/utils/constant/enums.js";
+import { orderStatus, paymentMethod } from "../../src/utils/constant/enums.js";
 
 // schema
 const orderSchema = new Schema({
@@ -13,7 +13,7 @@ const orderSchema = new Schema({
                 type:Schema.Types.ObjectId,
                 ref:"Product"
             },
-            quantity: {type:Number,default:1},
+            quantity:Number,
             price:Number, // 1000
             name:String,
             finalPrice:Number, // 4000
@@ -21,8 +21,12 @@ const orderSchema = new Schema({
         }
     ],
     address:{
-     phone:String,
-     street:String ,
+        type: String,
+        required: true
+    },
+    phone: {
+        type: String,
+        required: true
     },
      paymentMethod:{
        type:String,
@@ -31,11 +35,12 @@ const orderSchema = new Schema({
      },
      status:{
         type:String,
-        enum:['placed','delivered','cancled','refunded'],
-        default:'placed'
+        enum: Object.values(orderStatus),
+        default: orderStatus.PLACED
      },
      coupon:{
-        couponId:{type: Schema.Types.ObjectId, ref:"Coupon"},
+        couponId:{type: Schema.Types.ObjectId,
+         ref:"Coupon"},
         code:String,
         discount:Number
      },

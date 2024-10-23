@@ -2,7 +2,10 @@ import {Router} from "express";
 import { asyncHandler } from "../../middleware/asyncHandler.js";
 import { isValid } from "../../middleware/validation.js";
 import { loginVal, signupVal } from "./auth.validation.js";
-import { login, signup, verifyAccount } from "./auth.controller.js";
+import { deleteAccount, login, signup, updateAccount, verifyAccount } from "./auth.controller.js";
+import { isAuthourized } from "../../middleware/authorization.js";
+import { roles } from "../../utils/constant/enums.js";
+import { isAuthenticated } from "../../middleware/authentication.js";
 
 const authRouter = Router()
 
@@ -16,5 +19,19 @@ authRouter.post('/signup',
     authRouter.post('/login',
     isValid(loginVal),
     asyncHandler(login)) 
+
+// update account
+authRouter.put('/:userId',
+    isAuthenticated(),
+    isAuthourized([roles.USER]),
+    asyncHandler(updateAccount)
+)
+
+// delete account
+authRouter.delete('/:userId',
+    isAuthenticated(),
+    isAuthourized([roles.ADMIN, roles.USER]),
+    asyncHandler(deleteAccount)
+)
 
 export default authRouter

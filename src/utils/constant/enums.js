@@ -10,13 +10,24 @@ export const roles = {
 }
 Object.freeze(roles)
 
-export const statuses = {
+export const status = {
     PENDING:"pending",
      VERIFIED:"verified",
-     BLOCKED:"blocked"
+     BLOCKED:"blocked",
+     DELETED: 'deleted'
   
 }
-Object.freeze(statuses)
+Object.freeze(status)
+
+export const orderStatus = {
+    PLACED: 'placed',
+    SHIPPING: 'shipping',
+    DELIVERED: 'delivered',
+    CANCELED: 'canceled',
+    REFUNDED: 'redunded'
+}
+Object.freeze(orderStatus)
+
 
 export const paymentMethod = {
     VISA:"visa",

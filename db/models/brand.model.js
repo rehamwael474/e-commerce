@@ -1,6 +1,5 @@
 import { model,Schema } from "mongoose";
-import pkg from 'joi';
-const { required } = pkg;
+
 // schema
 const brandSchema = new Schema({
     name:{

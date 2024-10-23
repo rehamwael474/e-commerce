@@ -51,3 +51,26 @@ export const addReview = async(req,res,next) => {
         data
     })
 }
+
+// delete review
+export const deleteReview = async(req,res,next) => {
+    const { reviewId } = req.params
+    const deletedReview = await Review.deleteOne({ _id: reviewId })
+    return res.status(200).json({success: true, data: deletedReview})
+}
+
+// get all review
+export const getAllReview = async(req,res,next) => {
+    const allReviews = await Review.find()
+    return res.status(200).json({ success: true, data: allReviews})
+}
+
+// get specific review
+export const getSpecificReviews = async (req,res,next) => {
+    // get data feom req
+    const { reviewId } = req.params
+    // get specific
+    const getSpecific = await Review.findById(reviewId)
+    // send response
+    return res.status(200).json({data: getSpecific, success: true})
+}

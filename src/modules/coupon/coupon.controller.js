@@ -39,3 +39,56 @@ export const addCoupon = async (req,res,next) =>{
     })
     
 }
+
+// update coupon 
+export const updateCoupon = async (req,res,next) => {
+    // get data feom req
+    const { code, discountAmount, discountType, fromDate, toDate } = req.body
+    const { couponId } = req.params
+    // check existence
+    const couponExist = await Coupon.findById(couponId)//{}, null
+    if(!couponExist){
+        return next(new AppError(messages.coupon.notFound, 404))
+    }
+    // prepare data
+    couponExist.code = code
+    couponExist.discountAmount = discountAmount
+    couponExist.discountType = discountType
+    couponExist.fromDate = fromDate
+    couponExist.toDate = toDate
+    // add to db
+    const updatedCoupon = await couponExist.save()//{}, null
+    if(!couponExist){
+        return next(new AppError(messages.coupon.failToUpdate, 500))
+    }
+    // send response
+    return res.status(200).json({
+        message: messages.coupon.updatedSuccessfully,
+        success: true,
+        data: updatedCoupon
+    })
+}
+
+// get all coupons
+export const getAllCoupon = async (req,res,next) => {
+    // get data from req
+    const { couponId } = req.params
+    const getAll = await Coupon.find()
+    return res.status(200).json({success: true, data: getAll})
+}
+
+// get specific coupon
+export const getSpecificCoupon = async (req,res,next) => {
+    // get data from req
+    const { couponId } =req.params
+    const getspecific = await Coupon.findById(couponId)
+    return res.status(200).json({success: true, data: getspecific})
+}
+
+// delete coupon
+export const deleteCoupon = async (req,res,next) => {
+    // get data feom req
+    const { couponId } = req.params
+    const deletedCoupon = await Coupon.deleteOne({ _id: couponId })
+    return res.status(200).json({message: messages.coupon.deletedSuccessfuly, success: true})
+}

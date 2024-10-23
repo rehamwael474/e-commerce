@@ -1,15 +1,13 @@
 import joi from 'joi'
-import { paymentMethod } from "../../utils/constant/enums.js";
+import { generalFields } from '../../middleware/validation.js'
+
 
 
 
 export const createOrderVal = joi.object({
-    
-        phone:joi.string(),
-        street:joi.string(),
-    
-    paymentMethod: joi.string().valid(...Object.values(paymentMethod)),
-   
-    coupon:joi.string(),
+    address: joi.string().required(),
+    phone: generalFields.phone.required(),
+    payment: joi.string().required(),
+    coupon: generalFields.objectId.required()
     
 })

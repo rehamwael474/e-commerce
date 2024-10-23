@@ -5,3 +5,8 @@ export const addCategoryVal = joi.object({
     name: generalFields.name.required()
     
 })
+export const updateCategoryVal = joi.object({
+    name: generalFields.name
+
+
+})

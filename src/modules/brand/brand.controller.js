@@ -3,9 +3,9 @@ import { Brand } from "../../../db/index.js"
 import { AppError } from "../../utils/appError.js"
 import { messages } from "../../utils/constant/messages.js"
 import cloudinary from "../../utils/constant/cloud.js"
-import pkg from 'joi';
-const { date } = pkg;
 
+
+// add brand
 export const addBrand = async(req,res,next)=>{
     // get data from req
     let {name}= req.body
@@ -15,11 +15,12 @@ export const addBrand = async(req,res,next)=>{
     if(brandExist){
         return next (new AppError(messages.brand.alreadyExist,409))
     }
-    // prepare obj
+
     // upload image
    const { secure_url,public_id } =await cloudinary.uploader.upload(req.file.path,{
         folder: 'hti-g2/brand'
     })
+    // prepare data
     const slug = slugify(name)
     const brand = new Brand({
         name,
@@ -28,8 +29,8 @@ export const addBrand = async(req,res,next)=>{
         createBy: req.authUser._id
     
     })
-    // add to db
 
+    // add to db
     const createdBrand = await brand.save()
     if(!createdBrand){
         // rollback
@@ -44,6 +45,7 @@ export const addBrand = async(req,res,next)=>{
     })
 }
 
+// update brand 
 export const updateBrand = async (req,res,next) =>{
     // get data from req
     let {name} = req.body
@@ -87,4 +89,26 @@ export const updateBrand = async (req,res,next) =>{
         message:messages.brand.updatedSuccessfully, success: true,
         data: updateBrand
     })
+}
+
+// get all barnds
+export const getAllBrands = async (req,res,next) => {
+    const getAll = await Brand.find()
+    return res.status(200).json({success: true, data: getAll})
+}
+
+// get specific barnd
+export const getSpecificBrand = async (req,res,next) => {
+    // get data feom req
+    const { brandId } = req.params
+    const getspecific = await Brand.findById(brandId)
+    return res.status(200).json({success: true, data: getspecific})
+}
+
+// delete brand
+export const deleteBrand = async (req,res,next) => {
+    // get data from req
+    const { brandId } = req.params
+    const deletedBrand = await Brand.deleteOne({ _id: brandId })
+    return res.status(200).json({message: messages.brand.deletedSuccessfully, success: true})
 }

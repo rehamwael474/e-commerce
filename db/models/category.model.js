@@ -1,7 +1,5 @@
 import { model, Schema } from "mongoose";
 import { type } from "os";
-import pkg from "joi";
-const { required } = pkg;
 
 //schema
 const categorySchema = new Schema({

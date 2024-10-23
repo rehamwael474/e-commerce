@@ -1,5 +1,5 @@
 import {model, Schema} from "mongoose"
-import { roles } from "../../src/utils/constant/enums.js"
+import { roles, status } from "../../src/utils/constant/enums.js"
 const { type } = pkg;
 import pkg from 'joi';
 const { required } = pkg;
@@ -35,15 +35,27 @@ const userSchema = new Schema({
     },
     status:{
         type:String,
-        enum:['pending','verified','blocked'],
-        default:"pending"
+        enum: Object.values(status),
+        default: status.PENDING
     },
     image:{
-        secure_url:{type:String,required:false},
+        secure_url:{
+            type:String,
+            required:false
+        },
         public_id:{type:String,required:false}
     },
+
     DOB:{type:String,default:Date.now()},
-    wishList:({type: Schema.Types.ObjectId,ref: "Product"})
+
+    wishList:[{type: Schema.Types.ObjectId,
+        ref: "Product"
+    }],
+
+    isDeleted:{
+        type:Boolean,
+        default: false
+    }
 
 },{timestamps:true})
 

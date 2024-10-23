@@ -1,5 +1,3 @@
-import pkg from 'joi';
-const { required } = pkg;
 import { model, Schema } from "mongoose";
 import { discountTypes } from "../../src/utils/constant/enums.js";
 
@@ -8,6 +6,7 @@ const couponSchema = new Schema({
     code:{
         type: String,
         required: true,
+        unique: true
     },
     discountAmount:{
         type:Number,

@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt'
-import { User } from "../../../db/index.js"
+import { Cart,User } from "../../../db/index.js"
 import { AppError } from "../../utils/appError.js"
 import { messages } from "../../utils/constant/messages.js"
 import { sendEmail } from '../../utils/email.js'
@@ -32,7 +32,9 @@ export const signup = async (req,res,next) =>{
     // generate token
     const token = generateToken({payload:{email,_id:createdUser._id}})
    // send email
-   await sendEmail({to:email,subject:"verify your account",html:`<p>click on link to verify account <a href = "${req.protocol}://${req.headers.host}/auth/verify/${token}">link</a></p>`})
+   await sendEmail({to:email,
+    subject:"verify your account",
+    html:`<p>click on link to verify account <a href = "${req.protocol}://${req.headers.host}/auth/verify/${token}">link</a></p>`})
    // send response
    return res.status(201).json({message:messages.user.createdSuccessfully,
     success:true,
@@ -65,6 +67,9 @@ export const login = async (req,res,next)=>{
    if (!match){
      return  next(new AppError(messages.user.invalidCreadentials,400))
    }
+   // update isDelete
+   userExist.isDeleted = false
+   await userExist.save()
    // generate token
    const token = generateToken({payload:{_id: userExist._id,email}})
    await User.updateOne({_id:userExist._id},{status:"verified"})
@@ -75,3 +80,40 @@ export const login = async (req,res,next)=>{
      token})
    
    }
+
+
+// update account
+export const updateAccount = async (req,res,next) => {
+  // get data from req
+  const {name, email, password, phone } = req.body
+  const{ userId } = req.params
+  // check existence
+  const userExist = await User.findById(userId)//{}, null
+  if(!userExist){
+      return next(new AppError(messages.user.notFound, 404))
+  }
+  // prepare data
+  userExist.name = name
+  userExist.email = email
+  userExist.phone = phone
+  userExist.password = password
+  // add to db
+  const updatedUser = await userExist.save()//{}, null
+  if(!updatedUser){
+      return next(new AppError(messages.user.failToUpdate, 500))
+  }
+  // send response
+  return res.status(200).json({
+      message: messages.user.updatedSuccessfully,
+      success: true,
+      data: updatedUser
+  })
+}
+
+// delete account
+export const deleteAccount = async (req,res,next) => {
+  // get data from req
+  const { userId } = req.params
+  const deletedUser = await User.deleteOne({ _id: userId})
+  return res.status(200).json({message: messages.user.deletedSuccessfuly})
+}

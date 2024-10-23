@@ -1,5 +1,3 @@
-import pkg from 'joi';
-const { required, types } = pkg;
 import { model,Schema } from "mongoose";
 import { discountTypes } from "../../src/utils/constant/enums.js";
 
@@ -42,19 +40,51 @@ const productSchema = new Schema({
     colors: [String],
     sizes: [String],
     mainImage:{
-       secure_url:{type:String, required: true},
-       public_id:{type:String, required: true},
+       secure_url:{
+        type:String,
+         required: true
+        },
+       public_id:{
+        type:String,
+         required: true
+        },
     },
     subImages: [{
-        secure_url:{type:String, required: true},
-        public_id:{type:String, required: true},
+        secure_url:{
+            type:String, 
+            required: true
+        },
+        public_id:{
+            type:String, 
+            required: true
+        },
      }],
      // ids
-     category:{type:Schema.Types.ObjectId, ref: "Category", required:true},
-     subcategory:{type:Schema.Types.ObjectId, ref: "Subcategory", required:true},
-     brand:{type:Schema.Types.ObjectId, ref: "Brand", required:true},
-     createdBy:{type:Schema.Types.ObjectId, ref: "User", required:true},
-     updatedBy:{type:Schema.Types.ObjectId, ref: "User", required:true},
+     category:{
+        type:Schema.Types.ObjectId,
+         ref: "Category", 
+         required:true
+        },
+     subcategory:{
+        type:Schema.Types.ObjectId,
+         ref: "Subcategory",
+          required:true
+        },
+     brand:{
+        type:Schema.Types.ObjectId,
+         ref: "Brand",
+          required:true
+        },
+     createdBy:{
+        type:Schema.Types.ObjectId, 
+        ref: "User",
+         required:true
+        },
+     updatedBy:{
+        type:Schema.Types.ObjectId,
+         ref: "User",
+          required:true
+        },
      rate: {
         type: Number,
         default: 5,
@@ -62,11 +92,14 @@ const productSchema = new Schema({
         min: 1
      },
 
-},{ timestamps: true})
+},{ timestamps: true,toJSON: {virtuals: true}, toObject: {virtuals: true}})
 // virtual
 productSchema.virtual('finalPrice').get(function(){
-    // 60 = 100 - (100* 40/100)
-    return this.price - (this.price * ((this.discount || 0)/100))
+    if(this.discountType == discountTypes.FIXED_AMOUNT){
+        return this.price - this.discount
+    } else {
+        return this.price - (this.price * (this.discount || 0)) / 100
+    }
 })
 
 // model

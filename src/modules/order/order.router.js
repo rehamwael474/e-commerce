@@ -4,7 +4,7 @@ import { isAuthourized } from "../../middleware/authorization.js";
 import { isValid } from "../../middleware/validation.js";
 import { createOrderVal } from "./order.validation.js";
 import { asyncHandler } from "../../middleware/asyncHandler.js";
-import { createOrder, getAllOrder, getSpecificOrder } from "./order.controller.js";
+import { createOrder, getAllOrder } from "./order.controller.js";
 import { roles } from "../../utils/constant/enums.js";
 
 const orderRouter = Router()
@@ -23,10 +23,5 @@ orderRouter.get('/',
     asyncHandler(getAllOrder)
 )
 
-// get specific order
-orderRouter.get('/:orderId',
-    isAuthenticated(),
-    isAuthourized([roles.ADMIN]),
-    asyncHandler(getSpecificOrder)
-)
+
 export default orderRouter

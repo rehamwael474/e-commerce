@@ -26,7 +26,6 @@ cartRouter.get('/',
     isAuthourized([roles.ADMIN]),
     asyncHandler(getAllCart)
 )
-
 // get specific
 cartRouter.get('/:cartId', 
     isAuthenticated(),

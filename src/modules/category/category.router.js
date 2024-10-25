@@ -3,7 +3,7 @@ import { fileUploads } from "../../utils/multer.js";
 import { isValid } from "../../middleware/validation.js";
 import { addCategoryVal, updateCategoryVal } from "./category.validation.js";
 import { asyncHandler } from "../../middleware/asyncHandler.js";
-import { addCategory,deleteCategroy, getAllCategories, getSpecificCatregroy, updateCategroy } from "./category.controller.js";
+import { addCategory,deleteCategory, getAllCategories, getSpecificCatregroy, updateCategory} from "./category.controller.js";
 import { isAuthenticated } from "../../middleware/authentication.js";
 import { isAuthourized } from "../../middleware/authorization.js";
 import { roles } from "../../utils/constant/enums.js";
@@ -25,22 +25,22 @@ asyncHandler(addCategory)
 categoryRouter.get('/',asyncHandler(getAllCategories))
 
 // get specific categroy
-categoryRouter.get('/:categroyId', asyncHandler(getSpecificCatregroy))
+categoryRouter.get('/:categoryId', asyncHandler(getSpecificCatregroy))
 
 // update categroy
-categoryRouter.put('/:categroyId', 
+categoryRouter.put("/:categoryId", 
    isAuthenticated(),
    isAuthourized([roles.ADMIN,roles.SELLER]),
    cloudUploads({}).single('image'),
    isValid(updateCategoryVal),
-   asyncHandler(updateCategroy)
+   asyncHandler(updateCategory)
 )
 
 // delete categroy
-categoryRouter.delete('/:categroyId',
+categoryRouter.delete('/:categoryId',
    isAuthenticated(),
    isAuthourized([roles.ADMIN, roles.SELLER]),
-   asyncHandler(deleteCategroy)
+   asyncHandler(deleteCategory)
 )
 
 export default categoryRouter

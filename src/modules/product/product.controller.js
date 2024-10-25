@@ -38,7 +38,7 @@ export const addProduct = async(req,res,next)=>{
    const {secure_url,public_id} = await cloudinary.uploader.upload(req.files.mainImage[0].path,{folder: "hti-g2/products/main-images"})
    let mainImage = {secure_url,public_id}
    req.failImages = []
-   failImages.push({ public_id })
+   req.failImages.push({ public_id })
    let subImages = []
 
 
@@ -66,7 +66,7 @@ export const addProduct = async(req,res,next)=>{
     brand,
     mainImage,
     subImages,
-   createdBy:req.authUser._id,
+    createdBy:req.authUser._id,
     updatedBy:req.authUser._id,
 
    })
@@ -124,12 +124,12 @@ export const updateProduct = async (req,res,next) => {
     const { productId } = req.body
     name = name.toLowerCase
     // check existense
-    const productExist = await Prouduct.findById(productId)//{}, null
+    const productExist = await Prouduct.findById(productId)
     if(!productExist){
         return next(new AppError(messages.product.notFound, 404))
     }
     // check name existence
-    const nameExist = await Prouduct.findOne({ name })//{}, null
+    const nameExist = await Product.findOne({ name })
     if(nameExist){
         return next(new AppError(messages.product.alreadyExist, 409))
     }
@@ -175,7 +175,7 @@ export const updateProduct = async (req,res,next) => {
 export const getSpecificProduct = async (req,res,next) => {
     // get data from req
     const { productId } = req.params
-    const getSpecific = await Prouduct.findById(productId)
+    const getSpecific = await Product.findById(productId)
     return res.status(200).json({success: true, data: getSpecific})
 }
 
@@ -183,6 +183,6 @@ export const getSpecificProduct = async (req,res,next) => {
 export const deleteProduct = async (req,res,next) => {
     // get data from req
     const { productId } = req.params
-    const deletedProduct = await Prouduct.deleteOne({ _id: productId })
-    return res.status(200).json({message: messages.product.deletedSuccessfully, success: true})
+    const deletedProduct = await Product.deleteOne({ _id: productId })
+    return res.status(200).json({message: messages.product.deletedSuccessfuly, success: true})
 }

@@ -110,5 +110,5 @@ export const deleteBrand = async (req,res,next) => {
     // get data from req
     const { brandId } = req.params
     const deletedBrand = await Brand.deleteOne({ _id: brandId })
-    return res.status(200).json({message: messages.brand.deletedSuccessfully, success: true})
+    return res.status(200).json({message: messages.brand.deletedSuccessfuly, success: true})
 }

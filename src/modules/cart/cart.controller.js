@@ -6,9 +6,10 @@ import { messages } from "../../utils/constant/messages.js"
 // add to cart
 export const addToCart = async (req,res,next)=>{
     // get data from req
-    const {prouductId,quantity} = req.body 
+    const {productId,quantity} = req.body 
     // check product existence
-    const productExist = await Product.findById(prouductId)
+    const productExist = await Product.findById(productId)
+
         if(!productExist){
             return next (new AppError(messages.product.notFound,404))
         }
@@ -17,9 +18,10 @@ export const addToCart = async (req,res,next)=>{
             return next (new AppError('out of stock',400))
         }
         let data = ''
-        const productExistInCart = Cart.findOneAndUpdate(
+
+        const productExistInCart = await Cart.findOneAndUpdate(
             {user: req.authUser._id ,
-                 "products.productId":prouductId},
+                 "products.productId":productId},
                  {"products.$.quantity":quantity},
                  {new:true}
                 )
@@ -30,9 +32,10 @@ export const addToCart = async (req,res,next)=>{
      * 3 update cart
      * 4 add to cart
       */      
+     // add to cart
      if(!productExistInCart){
-        const addedProduct = await Cart.findByIdAndUpdate({user:req.authUser._id},{
-            $push: {products:{prouductId,quantity}}
+        const addedProduct = await Cart.findOneAndUpdate({user:req.authUser._id},{
+            $push: {products:{productId,quantity}}
         },{new:true})
         data = addedProduct
      } 
@@ -40,13 +43,12 @@ export const addToCart = async (req,res,next)=>{
      res.status(200).json({message:"added to cart successfully",success:true,data})
     
 } 
-
 // delete cart
 export const deleteCart = async (req,res,next) => {
     // get data from params
     const { cartId } = req.params
     const deletedCart = await Cart.deleteOne({ _id: cartId})
-    return res.status(200).json({message: messages.cart.deletedSuccessfully, success: true})
+    return res.status(200).json({message: "deleted successfully", success: true})
 }
 
 // get all cart

@@ -8,6 +8,6 @@ export const createOrderVal = joi.object({
     address: joi.string().required(),
     phone: generalFields.phone.required(),
     payment: joi.string().required(),
-    coupon: generalFields.objectId.required()
+    coupon: joi.string().required(),
     
 })

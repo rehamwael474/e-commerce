@@ -30,9 +30,6 @@ productRouter.put('/:productId',
 )
 
 
-productRouter.get('/',asyncHandler(getAllProducts))
-export default productRouter
-
 // get specific product
 productRouter.get('/:productId', asyncHandler(getSpecificProduct))
 
@@ -42,4 +39,5 @@ productRouter.delete('/:productId',
     isAuthourized([roles.ADMIN, roles.SELLER]),
     asyncHandler(deleteProduct)
 )
+export default productRouter
 

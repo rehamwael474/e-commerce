@@ -3,7 +3,7 @@ import { cloudUploads } from "../../utils/multer-cloud.js"
 import { isValid } from "../../middleware/validation.js"
 import { addBrandVal, updateBrandVal } from "./brand.validation.js"
 import { asyncHandler } from "../../middleware/asyncHandler.js"
-import { addBrand, deleteBrand, getSpecificBrand, updateBrand } from "./brand.controller.js"
+import { addBrand, deleteBrand, getAllBrands, getSpecificBrand, updateBrand } from "./brand.controller.js"
 import { isAuthenticated } from "../../middleware/authentication.js"
 import { isAuthourized } from "../../middleware/authorization.js"
 import { roles } from "../../utils/constant/enums.js"
@@ -29,7 +29,7 @@ brandRouter.put('/:brandId',
 )
 
 // get all brands
-brandRouter.get('/', asyncHandler())
+brandRouter.get('/', asyncHandler(getAllBrands))
 
 // get specific brand
 brandRouter.get('/:brandId', asyncHandler(getSpecificBrand))

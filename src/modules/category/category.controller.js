@@ -41,63 +41,63 @@ export const getAllCategories = async (req,res,next)=>{
 // get specific categroy
 export const getSpecificCatregroy = async (req,res,next) => {
   // get data from req
-  const { categroyId } = req.params
+  const { categoryId } = req.params
   // get specific
-  const getSpecific = await Categroy.findById(categroyId)
+  const getSpecific = await Category.findById(categoryId)
   // send response
   return res.status(200).json({data: getSpecific, success: true})
 }
 
 // update categroy
-export const updateCategroy = async (req,res,next) => {
+export const updateCategory = async (req,res,next) => {
   // get data from req
   let { name } = req.body
-  const { categroyId } = req.params
+  const { categoryId } = req.params
   name = name.toLowerCase()
   // check existence
-  const categroyExist = await Categroy.findById(categroyId)//{}, null
-  if(!categroyExist){
-      return next(new AppError(messages.categroy.notFound, 404))
+  const categoryExist = await Category.findById(categoryId)
+  if(!categoryExist){
+      return next(new AppError(messages.category.notFound, 404))
   }
-  // check name
-  const nameExist = await Categroy.findOne({ name, _id: {$ne: categroyId} })//{}, null
+  // check name exist
+  const nameExist = await Category.findOne({ name, _id: {$ne: categoryId} })
   if(nameExist){
-      return next(new AppError(messages.categroy.alreadyExist, 409))
+      return next(new AppError(messages.category.alreadyExist, 409))
   }
   // prepare data
   const slug = slugify(name)
-  categroyExist.name = name
-  categroyExist.slug = slug
+  categoryExist.name = name
+  categoryExist.slug = slug
   // update image
   if(req.file){
      const {sucure_url, public_id } =  await cloudinary.uploader.upload(req.file.path, {
-          public_id: categroyExist.image.public_id
+          public_id: categoryExist.image.public_id
       })
-      categroyExist.image = {sucure_url, public_id }
+      categoryExist.image = {sucure_url, public_id }
       req.failImage = {sucure_url, public_id }
   }
   // add to db
-  const updatedCategroy = await categroyExist.save()//{}, null
-  if(!updatedCategroy){
-      return next(new AppError(messages.categroy.failToUpdate, 500))
+  const updateCategory = await categoryExist.save()
+  if(!updateCategory){
+      return next(new AppError(messages.category.failToUpdate, 500))
   }
   // send response
   return res.status(200).json({
-      message: messages.categroy.updatedSuccessfully,
+      message: messages.category.updatedSuccessfully,
       success: true,
-      data: updatedCategroy
+      data: updateCategory
   })
 }
 
 // delete categroy
-export const deleteCategroy = async (req,res,next) => {
+export const deleteCategory = async (req,res,next) => {
   // get data from req
-  const {categroyId} = req.params
+  const {categoryId} = req.params
   // delete categroy
-  const deletedCategroy = await Categroy.deleteOne({ _id: categroyId })
+  const deletedCategory = await Category.deleteOne({ _id: categoryId })
   // send response
   return res.status(200).json({
-      message: messages.categroy.deletedSuccessfully,
+      message: messages.category.deletedSuccessfuly,
       success: true
   })
 }

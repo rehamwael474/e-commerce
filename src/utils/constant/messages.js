@@ -4,7 +4,7 @@ const generateMessages = (entity) => ({
         notFound: `${entity} not found`,
         createdSuccessfully: `${entity} created successfully`,
         updatedSuccessfully: `${entity} updated successfully`,
-        deletedSuccessfuly: `${entity} created successfully`,
+        deletedSuccessfuly: `${entity} deleted successfully`,
         failToCreate: `fail to create ${entity}`,
         failToUpdate: `fail to update ${entity}`,
         failToDelete: `fail to delete ${entity}`
